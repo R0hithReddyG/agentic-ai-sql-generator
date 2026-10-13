@@ -1,0 +1,76 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "agentic-sql"
+version = "0.1.0"
+description = "Agentic AI SQL Query Generator — tool-using, goal-oriented agent for natural-language-to-SQL with autonomous recovery and verification"
+readme = "README.md"
+requires-python = ">=3.10"
+authors = [{ name = "Claude Code", email = "noreply@anthropic.com" }]
+license = { text = "MIT" }
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+]
+
+dependencies = [
+    "pydantic>=2.0.0",
+    "sqlalchemy>=2.0.0",
+    "sqlglot>=25.0.0",
+    "psycopg2-binary>=2.9.0",
+    "fastapi>=0.104.0",
+    "uvicorn[standard]>=0.24.0",
+    "streamlit>=1.30.0",
+    "httpx>=0.25.0",
+    "pytest>=7.4.0",
+    "pytest-asyncio>=0.23.0",
+    "pandas>=2.1.0",
+    "rich>=13.0.0",
+    "openpyxl>=3.1.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "black>=24.0.0",
+    "ruff>=0.1.0",
+    "mypy>=1.0.0",
+    "pre-commit>=3.0.0",
+]
+openai = ["openai>=1.0.0"]
+
+[project.scripts]
+agentic-sql = "main:main"
+run-demo = "main:run_demo"
+run-benchmark = "main:run_benchmark"
+run-server = "main:run_server"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["agents*", "config*", "database*", "eval*", "llm*", "plan*", "services*", "state*", "tests*", "tools*", "ui*", "examples*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+asyncio_mode = "auto"
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+select = ["E", "F", "W", "I", "N", "UP", "D", "B", "SIM", "ARG"]
+ignore = ["D105", "D401"]
+
+[tool.black]
+line-length = 100
+target-version = ["py310", "py311", "py312"]
+
+[tool.mypy]
+python_version = "3.10"
+strict = true
+ignore_missing_imports = true
+warn_unused_ignores = false

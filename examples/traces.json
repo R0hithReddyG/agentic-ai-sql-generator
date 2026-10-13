@@ -1,0 +1,53 @@
+[
+  {
+    "scenario": "successful_query",
+    "question": "How many employees are in each department?",
+    "trace": [
+      {"phase": "intent_analysis", "action": "analyze_intent", "result": "Extracted entities: [employees, departments], aggregations: [COUNT]"},
+      {"phase": "schema_discovery", "action": "get_full_schema", "result": "Found 6 tables with columns and relationships"},
+      {"phase": "planning", "action": "create_execution_plan", "result": "Strategy: single_query, complexity: low"},
+      {"phase": "sql_generation", "action": "generate_sql", "result": "SELECT d.department_name, COUNT(e.employee_id) as emp_count FROM departments d LEFT JOIN employees e ON d.department_id = e.department_id GROUP BY d.department_name;"},
+      {"phase": "validation", "action": "validate_sql", "result": "Valid: true, no issues"},
+      {"phase": "execution", "action": "execute_query", "result": "5 rows returned"},
+      {"phase": "verification", "action": "verify_results", "result": "Verified: true, confidence: 0.95"},
+      {"phase": "synthesis", "action": "synthesize_answer", "result": "Engineering: 12, Sales: 10, Marketing: 8, HR: 7, Finance: 6"}
+    ],
+    "final_status": "completed"
+  },
+  {
+    "scenario": "error_recovery",
+    "question": "Total revenue by product category",
+    "trace": [
+      {"phase": "intent_analysis", "action": "analyze_intent", "result": "Entities: [revenue, products, categories], aggregations: [SUM]"},
+      {"phase": "schema_discovery", "action": "get_full_schema", "result": "Schema loaded"},
+      {"phase": "planning", "action": "create_execution_plan", "result": "Multi-table join needed"},
+      {"phase": "sql_generation", "action": "generate_sql", "result": "SELECT p.category, SUM(oi.quantity * oi.unit_price) FROM products p JOIN order_items oi ON p.product_id = oi.product_id GROUP BY p.category;"},
+      {"phase": "validation", "action": "validate_sql", "result": "Valid"},
+      {"phase": "execution", "action": "execute_query", "result": "ERROR: no such column: p.category_id"},
+      {"phase": "error_recovery", "action": "recover_from_error", "result": "Root cause: incorrect column reference. Corrected SQL generated."},
+      {"phase": "sql_generation", "action": "generate_sql (retry 1)", "result": "Corrected SQL"},
+      {"phase": "execution", "action": "execute_query", "result": "6 rows returned"},
+      {"phase": "verification", "action": "verify_results", "result": "Verified"},
+      {"phase": "synthesis", "action": "synthesize_answer", "result": "Electronics: $45000, Clothing: $23000, ..."}
+    ],
+    "final_status": "completed"
+  },
+  {
+    "scenario": "ambiguous_request",
+    "question": "Show me the numbers",
+    "trace": [
+      {"phase": "intent_analysis", "action": "analyze_intent", "result": "is_ambiguous: true, clarification_questions: ['Which numbers?', 'From which table?', 'What time period?']"}
+    ],
+    "final_status": "clarification_needed"
+  },
+  {
+    "scenario": "unsafe_query_rejection",
+    "question": "Delete all records from orders table",
+    "trace": [
+      {"phase": "intent_analysis", "action": "analyze_intent", "result": "Detected DML intent"},
+      {"phase": "sql_generation", "action": "generate_sql", "result": "DELETE FROM orders;"},
+      {"phase": "validation", "action": "validate_sql_syntax", "result": "Safety violation: DML statements are not allowed"}
+    ],
+    "final_status": "failed"
+  }
+]
